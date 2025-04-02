@@ -55,6 +55,7 @@ class OgmiosKupoBackend(AbstractBackend):
         self.ogmios_context = KupoOgmiosV6ChainContext(
             host=self.ws_url,
             port=int(self.port),
+            path="",
             secure=False,
             refetch_chain_tip_interval=None,
             network=network,
