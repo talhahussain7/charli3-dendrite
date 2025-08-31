@@ -356,7 +356,12 @@ class SplashBaseState(AbstractPairState):
         if "pool_nft" in values and "lp_tokens" in values:
             order_class = cls.pool_datum_class()
             try:
-                datum: SplashSSPPoolDatum | SplashCPPPoolDatum = order_class.from_cbor(
+                datum: (
+                    SplashSSPPoolDatum
+                    | SplashCPPPoolDatum
+                    | SplashCPPRoyaltyPoolDatum
+                    | SplashCPPBidirPoolDatum
+                ) = order_class.from_cbor(
                     values["datum_cbor"],
                 )
             except DeserializeException as err:
@@ -368,6 +373,10 @@ class SplashBaseState(AbstractPairState):
                 raise NotAPoolError("Invalid LP tokens")
 
             values["assets"] = Assets.model_validate(values["assets"])
+            if len(values["assets"]) == 3:
+                lovelace = values["assets"].root.pop("lovelace")
+                values["assets"].root["lovelace"] = lovelace
+
             return True
 
         return False
